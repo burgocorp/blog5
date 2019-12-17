@@ -8,12 +8,21 @@ const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
 
 
+const validateRegisterInput = require('../validation/register');
+const validateLoginInput = require('../validation/login');
+
+
 
 //@route POST http://localhost:3000/user/register
 //@desc user Register
 //@access Public
 //user register 1.email check 2. create avatar 3. usermodel 4.password 암호화 5.response
 router.post('/register', (req,res)=> {
+
+    const {errors, isValid} = validateRegisterInput(req.body);
+    if (!isValid){
+        return res.status(400).json(errors);
+    }
 
     userModel
         .findOne({email : req.body.email})
@@ -72,6 +81,54 @@ router.post('/register', (req,res)=> {
 
 //user login 1.email check 2. password decoding 3. returning jwt 4. response
 router.post('/login', (req,res)=> {
+
+    const {errors, isValid} = validateLoginInput(req.body);
+    if(!isValid){
+        return res.status(400).json(errors);
+    }
+
+    userModel
+        .findOne({email : req.body.email})
+        .exec()
+        .then(user => {
+            if(!user){
+                res.json({
+                    msg : "register required"
+                });
+            }else{
+
+                bcrypt
+                    .compare(req.body.password, user.password)
+                    .then(isMatch => {
+                        if(isMatch){
+
+                            const payload = {id: user.id, name:user.name , avatar: user.avatar};
+
+                            const token = jwt.sign(
+                                payload,
+                                process.env.SECRET_KEY,
+                                {expiresIn : 36000}
+                            );
+
+                            return res.json({
+                                msg : "successfull login",
+                                tokenInfo : 'bearer' + token
+                            });
+
+                        }else{
+                            res.json({
+                                msg : "password incorrect"
+                            });
+                        }
+                    })
+                    .catch(err =>res.json(err));
+            }
+        })
+        .catch(err => {
+            res.json({
+                msg : err.message
+            });
+        });
 
 });
 
