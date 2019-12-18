@@ -3,6 +3,8 @@ const router = express.Router();
 const profileModel = require('../models/profile');
 const passport = require('passport');
 const authCheck = passport.authenticate('jwt',{session : false})
+const validateProfileInput = require('../validation/profile');
+
 
 //@route POST http://localhost:3000/profile/
 //@desc register userProfile
@@ -10,6 +12,11 @@ const authCheck = passport.authenticate('jwt',{session : false})
 //passport.authenticate('jwt')를 authCheck로 상수화시킴 
 // authcheck가 있으면 login해서 token을 받은 후 header에 넣어서 test.
 router.post('/', authCheck, (req,res)=> {
+
+    const {errors, isValid} = validateProfileInput(req.body);
+    if (!isValid){
+        return res.status(400).json(errors);
+    }
 
 // { 여기가 profileFields 이다
 //     user: "토큰에 담겨져 있는 유저id",
@@ -73,7 +80,8 @@ router.post('/', authCheck, (req,res)=> {
 router.get('/', authCheck, (req,res) => {
 
     profileModel
-        .findOne({user: req.user.id}) //({user :<=이것은 db에 있는 user 이고 req.user.id <= 여기에 user는 토큰 값에 있는 유저아이디이다 })
+        .findOne({user: req.user.id})//({user :<=이것은 db에 있는 user 이고 req.user.id <= 여기에 user는 토큰 값에 있는 유저아이디이다 })
+        .populate('user', ['name', 'avatar']) 
         .then(profile => {
             if(!profile){
                 return res.json({
