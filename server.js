@@ -10,6 +10,7 @@ dotenv.config();
 
 
 const userRoute = require('./route/user');
+const profileRoute = require('./route/profile');
 
 
 
@@ -25,6 +26,7 @@ require('./config/passport')(passport);
 
 
 app.use('/user', userRoute);
+app.use('/profile', profileRoute);
 
 const PORT = process.env.PORT || 5000;
 
