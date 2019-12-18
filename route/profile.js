@@ -42,6 +42,14 @@ router.post('/', authCheck, (req,res)=> {
         .then(profile => {
             if(profile){
                 // user profile이 있다면 기존 프로필 정보 수정
+                profileModel
+                    .findOneAndUpdate(
+                        {user : req.user.id},
+                        {$set : profileFields},
+                        {new : true}
+                    )
+                    .then(profile => res.json(profile))
+                    .catch(err => res.json(err.message));
             }else{
                 // user profile이 없으면 새로운 프로필 생성 
                 new profileModel(profileFields)
@@ -53,6 +61,7 @@ router.post('/', authCheck, (req,res)=> {
             
         })
         .catch(err => res.json(err));
+
 
 
 });
