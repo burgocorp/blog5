@@ -146,6 +146,7 @@ router.get('/currents', passport.authenticate('jwt',{session : false}),(req,res)
         name : req.user.name,
         avatar : req.user.avatar
     });
+    
 });
 
 
