@@ -1,5 +1,5 @@
 const jwtStrategy = require('passport-jwt').Strategy;
-const extractJwt = require('passport-jwt').ExtractJwt; //jwt을 불러와서 
+const ExtractJwt = require('passport-jwt').ExtractJwt; //jwt을 불러와서 
 //이 user의 Info를 (유무)비교하기 위해서 mongoose를 불러온다 
 const mongoose = require('mongoose');
 const userModel = mongoose.model('user');
