@@ -2,16 +2,27 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyparser = require('body-parser');
-const userRoute = require('./route/user');
+
+const passport = require('passport');
 const dotenv = require('dotenv');
 dotenv.config();
 
 
+
+const userRoute = require('./route/user');
+
+
+
 require('./db');
+
+
 
 app.use(morgan('dev'));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended : true}));
+app.use(passport.initialize());
+require('./config/passport')(passport);
+
 
 app.use('/user', userRoute);
 

@@ -18,11 +18,6 @@ module.exports = function validateRegisterInput(data) {
         errors.username = "name field is required";
     }
 
-   
-  
-
-   
-
     if(!validator.isEmail(data.email)){
         errors.email = "email is invalid";
     }
