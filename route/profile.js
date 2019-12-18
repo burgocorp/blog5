@@ -66,4 +66,26 @@ router.post('/', authCheck, (req,res)=> {
 
 });
 
+//@route GET http://localhost:3000/profile/
+//@desc get profile
+//@access Private
+//1.profileModel에 user정보(id) 유무 체크  
+router.get('/', authCheck, (req,res) => {
+
+    profileModel
+        .findOne({user: req.user.id}) //({user :<=이것은 db에 있는 user 이고 req.user.id <= 여기에 user는 토큰 값에 있는 유저아이디이다 })
+        .then(profile => {
+            if(!profile){
+                return res.json({
+                    msg : "등록된 프로필 정보가 없습니다"
+                });
+            }else{
+                res.json(profile);
+            }
+
+        })
+        .catch(err => res.json(err));
+
+});
+
 module.exports = router;
